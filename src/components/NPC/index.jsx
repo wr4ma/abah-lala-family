@@ -8,12 +8,13 @@ import { entryAt, findPath } from '../../systems/RoutineSystem';
 import { playerState } from '../../systems/input';
 import { useStore } from '../../store/useStore';
 export default function NPC({ cfg }) {
+  const o = cfg.offset || [0, 0];
   const g = useRef(), anim = useRef({ walking: false, sitting: false }), st = useRef(null);
-  if (!st.current) { const e = entryAt(routines.routines[cfg.id], clock.hour), n = house.nodes[e.loc]; st.current = { x: n[0], z: n[1], rot: 0, path: [], loc: e.loc }; }
+  if (!st.current) { const e = entryAt(routines.routines[cfg.id], clock.hour), n = house.nodes[e.loc]; st.current = { x: n[0] + o[0], z: n[1] + o[1], rot: 0, path: [], loc: e.loc }; }
   useFrame((_, dt) => {
     if (useStore.getState().paused) return; dt = Math.min(dt, 0.05);
     const s = st.current, e = entryAt(routines.routines[cfg.id], clock.hour);
-    if (e.loc !== s.loc) { s.loc = e.loc; s.path = findPath(house, [s.x, s.z], e.loc); }
+    if (e.loc !== s.loc) { s.loc = e.loc; s.path = findPath(house, [s.x, s.z], e.loc); const L = s.path[s.path.length - 1]; if (L) s.path[s.path.length - 1] = [L[0] + o[0], L[1] + o[1]]; }
     if (s.path.length) {
       const [tx, tz] = s.path[0], dx = tx - s.x, dz = tz - s.z, d = Math.hypot(dx, dz), step = cfg.speed * dt;
       if (d <= step) { s.x = tx; s.z = tz; s.path.shift(); } else { s.x += (dx / d) * step; s.z += (dz / d) * step; s.rot = Math.atan2(dx, dz); }
