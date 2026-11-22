@@ -25,5 +25,5 @@ export default function NPC({ cfg }) {
     const near = Math.hypot(s.x - playerState.x, s.z - playerState.z) < 2, cur = useStore.getState().nearNpc;
     if (near && cur !== cfg.id) useStore.setState({ nearNpc: cfg.id }); else if (!near && cur === cfg.id) useStore.setState({ nearNpc: null });
   });
-  return <group ref={g}><Character color={cfg.color} anim={anim} /></group>;
+  return <group ref={g}><Character {...cfg} anim={anim} /></group>;
 }

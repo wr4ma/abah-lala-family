@@ -29,5 +29,5 @@ export default function Player() {
     want.set(tgt.x + dir[0] * dist, tgt.y + dir[1] * dist, tgt.z + dir[2] * dist);
     camera.position.lerp(want, 1 - Math.exp(-10 * dt)); camera.lookAt(tgt);
   });
-  return <group ref={g}><Character color={chars.player.color} anim={anim} /></group>;
+  return <group ref={g}><Character {...chars.player} anim={anim} /></group>;
 }
