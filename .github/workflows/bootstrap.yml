@@ -1,4 +1,3 @@
-# Workflow: validasi -> ekstrak -> build -> commit source -> deploy Pages.
 name: Bootstrap from ZIP
 on:
   push:
@@ -84,7 +83,7 @@ jobs:
           git rm -q --ignore-unmatch "$ZIP_FILE"
           printf 'node_modules\ndist\nstaging\n' > .gitignore
           git config user.name "github-actions"; git config user.email "actions@github.com"
-          git add -A -- . ':!staging'
+          git add -A
           if git diff --cached --quiet; then echo "Tidak ada perubahan."; else git commit -m "Apply $ZIP_FILE [skip ci]"; git push; fi
 
       - run: cp staging/dist/index.html staging/dist/404.html
