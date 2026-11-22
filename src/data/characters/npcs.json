@@ -1,0 +1,8 @@
+{
+  "_note": "NPC PLACEHOLDER. Isi 'reference' dengan path foto, 'model' dengan GLB nanti.",
+  "player": { "color": "#4a7fb5" },
+  "npcs": [
+    {"id":"abah","name":"Abah (contoh)","color":"#8a5a3c","speed":1.3,"model":null,"reference":null,"line":"Sini, duduk dulu."},
+    {"id":"lala","name":"Lala (contoh)","color":"#c76b8a","speed":1.5,"model":null,"reference":null,"line":"Hai! Sudah makan?"}
+  ]
+}

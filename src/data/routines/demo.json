@@ -1,0 +1,36 @@
+{
+  "_note": "Rutinitas DEMONSTRASI, bukan fakta tentang orang asli. 'from' inklusif, 'to' eksklusif.",
+  "activities": {
+    "sleep": {"label":"beristirahat di kamar","pose":"sit"},
+    "cook": {"label":"beraktivitas di dapur","pose":"stand"},
+    "eat": {"label":"makan di ruang makan","pose":"sit"},
+    "tv": {"label":"menonton televisi","pose":"sit"},
+    "terrace": {"label":"duduk di teras","pose":"sit"},
+    "walk": {"label":"berjalan di halaman","pose":"stand"}
+  },
+  "routines": {
+    "abah": [
+      {"from":0,"to":5,"activity":"sleep","loc":"bedroom"},
+      {"from":5,"to":7,"activity":"terrace","loc":"terrace"},
+      {"from":7,"to":8,"activity":"eat","loc":"dining"},
+      {"from":8,"to":11,"activity":"walk","loc":"backyard"},
+      {"from":11,"to":13,"activity":"tv","loc":"family"},
+      {"from":13,"to":14,"activity":"eat","loc":"dining"},
+      {"from":14,"to":17,"activity":"terrace","loc":"terrace"},
+      {"from":17,"to":20,"activity":"tv","loc":"living"},
+      {"from":20,"to":22,"activity":"eat","loc":"dining"},
+      {"from":22,"to":24,"activity":"sleep","loc":"bedroom"}
+    ],
+    "lala": [
+      {"from":0,"to":6,"activity":"sleep","loc":"bedroom"},
+      {"from":6,"to":8,"activity":"cook","loc":"kitchen"},
+      {"from":8,"to":9,"activity":"eat","loc":"dining"},
+      {"from":9,"to":12,"activity":"walk","loc":"yard"},
+      {"from":12,"to":14,"activity":"cook","loc":"kitchen"},
+      {"from":14,"to":18,"activity":"tv","loc":"living"},
+      {"from":18,"to":20,"activity":"cook","loc":"kitchen"},
+      {"from":20,"to":21,"activity":"eat","loc":"dining"},
+      {"from":21,"to":24,"activity":"tv","loc":"family"}
+    ]
+  }
+}

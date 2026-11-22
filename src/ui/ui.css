@@ -1,0 +1,17 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#root{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;user-select:none;-webkit-user-select:none;font-family:Georgia,serif;background:#1b1410;color:#fff4e0}
+canvas{position:fixed;inset:0}
+.welcome{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(#6b4528,#1b1410);text-align:center;padding:24px}
+h1{font-size:clamp(32px,9vw,56px);letter-spacing:.12em;margin:0;line-height:1.15}.tag{font-style:italic;opacity:.8;margin:0 0 20px}
+button{font:inherit;color:inherit;background:#ffffff22;border:1px solid #ffffff44;border-radius:12px;padding:12px 22px;min-width:200px;backdrop-filter:blur(6px)}
+button.primary{background:#d9923f;color:#1b1410;font-weight:bold;border:0}
+.joy{position:fixed;left:calc(24px + env(safe-area-inset-left));bottom:calc(28px + env(safe-area-inset-bottom));width:130px;height:130px;border-radius:50%;background:#ffffff1f;border:2px solid #ffffff44;display:grid;place-items:center;touch-action:none;z-index:2}
+.knob{width:56px;height:56px;border-radius:50%;background:#ffffffaa}
+.look{position:fixed;top:0;right:0;width:55%;height:100%;touch-action:none;z-index:1}
+.hud{position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;display:flex;justify-content:space-between;z-index:3;pointer-events:none}
+.hud>*{pointer-events:auto}.hud button{min-width:0;padding:8px 14px;margin-left:8px}.clock{background:#0006;padding:8px 14px;border-radius:12px}
+.act{position:fixed;right:28px;bottom:calc(40px + env(safe-area-inset-bottom));z-index:3;background:#d9923fcc;min-width:96px}
+.dialog{position:fixed;left:12%;right:12%;bottom:30%;z-index:4;background:#000b;border-radius:14px;padding:16px;white-space:pre-line;text-align:center}
+.overlay{position:fixed;inset:0;background:#000a;display:grid;place-items:center;z-index:5}
+.panel{display:flex;flex-direction:column;gap:12px;width:min(88vw,360px);background:#2a1d14;border-radius:16px;padding:20px}.panel h2{margin:0}
+.row{display:flex;flex-direction:column;gap:4px;font-size:14px}.row select{font:inherit;padding:8px}.hint{font-size:12px;opacity:.6;margin:0}
