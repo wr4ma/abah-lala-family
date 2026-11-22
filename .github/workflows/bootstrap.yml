@@ -1,0 +1,95 @@
+# Workflow: validasi -> ekstrak -> build -> commit source -> deploy Pages.
+name: Bootstrap from ZIP
+on:
+  push:
+    branches: [main]
+    paths: ['abah-lalas-family.zip', 'update.zip']
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  zip-to-pages:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.dep.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Validasi & ekstrak ZIP ke staging
+        run: |
+          ZIP=""
+          for f in abah-lalas-family.zip update.zip; do [ -f "$f" ] && ZIP="$f" && break; done
+          [ -z "$ZIP" ] && { echo "::error::Tidak ada abah-lalas-family.zip / update.zip di root."; exit 1; }
+          echo "ZIP_FILE=$ZIP" >> "$GITHUB_ENV"
+          python3 - "$ZIP" <<'PY'
+          import sys, os, re, shutil, zipfile, pathlib, json
+          zp = sys.argv[1]
+          def fail(m): print('::error::' + m); sys.exit(1)
+          try: z = zipfile.ZipFile(zp)
+          except zipfile.BadZipFile: fail('ZIP rusak.')
+          if z.testzip(): fail('Integritas ZIP gagal.')
+          SKIP = ('.git/', '.github/', 'node_modules/', 'staging/', '__MACOSX/')
+          items, total = [], 0
+          for i in z.infolist():
+              n = i.filename.replace('\\', '/'); p = pathlib.PurePosixPath(n)
+              if n.startswith('/') or '..' in p.parts or re.match(r'^[A-Za-z]:', n): fail('Path berbahaya: ' + n)
+              if (i.external_attr >> 16) & 0o170000 == 0o120000: fail('Symlink ditolak: ' + n)
+              total += i.file_size
+              if total > 200 * 1024 * 1024: fail('ZIP terlalu besar.')
+              if i.is_dir(): continue
+              items.append((i, n))
+          # Buang folder pembungkus tunggal (mis. abah-lalas-family/)
+          if not any(n == 'package.json' for _, n in items):
+              tops = {n.split('/')[0] for _, n in items}
+              if len(tops) == 1:
+                  pre = tops.pop() + '/'
+                  items = [(i, n[len(pre):]) for i, n in items]
+          out = pathlib.Path('staging').resolve()
+          if out.exists(): shutil.rmtree(out)
+          shutil.copytree('.', out, ignore=shutil.ignore_patterns('.git', 'node_modules', 'dist', 'staging', '*.zip'))
+          for i, n in items:
+              if n.endswith('.DS_Store') or any(n.startswith(s) for s in SKIP): continue
+              d = (out / n).resolve()
+              if out not in d.parents: fail('Path keluar project: ' + n)
+              d.parent.mkdir(parents=True, exist_ok=True)
+              with z.open(i) as s, open(d, 'wb') as t: shutil.copyfileobj(s, t)
+          for r in ['package.json', 'index.html', 'vite.config.js', 'src/main.jsx']:
+              if not (out / r).is_file(): fail('File wajib tidak ada: ' + r)
+          pk = json.load(open(out / 'package.json'))
+          if pk.get('name') != 'abah-lalas-family': fail('package.json name harus "abah-lalas-family".')
+          print('OK versi', pk.get('version'))
+          PY
+
+      - name: Install dependency
+        working-directory: staging
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: staging
+        run: npm run build
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+
+      - name: Commit source ke repo (hanya jika build sukses)
+        run: |
+          rsync -a --exclude node_modules --exclude dist --exclude .git --exclude .github staging/ ./
+          git rm -q --ignore-unmatch "$ZIP_FILE"
+          printf 'node_modules\ndist\nstaging\n' > .gitignore
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add -A -- . ':!staging'
+          if git diff --cached --quiet; then echo "Tidak ada perubahan."; else git commit -m "Apply $ZIP_FILE [skip ci]"; git push; fi
+
+      - run: cp staging/dist/index.html staging/dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: staging/dist }
+      - id: dep
+        uses: actions/deploy-pages@v4
